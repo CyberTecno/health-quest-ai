@@ -1,0 +1,12 @@
+{
+  "name": "health-quest-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Health Quest 30-day tracker with a secure server-side Gemini chat endpoint",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
