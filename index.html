@@ -406,17 +406,17 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   </div>
 </section>
 
-<button class="ai-launcher" id="aiLauncher" aria-controls="aiPanel" aria-expanded="false">✦ PARTNER AI</button>
-<section class="ai-panel" id="aiPanel" aria-label="Chat Partner AI" aria-hidden="true">
+<button class="ai-launcher" id="aiLauncher" aria-controls="aiPanel" aria-expanded="false">✦ CHAT SUZU</button>
+<section class="ai-panel" id="aiPanel" aria-label="Chat Suzu, partner AI Health Quest" aria-hidden="true">
   <div class="ai-head">
-    <img id="aiMascot" alt="Partner chibi" src="" />
-    <div class="ai-head-copy"><strong>PARTNER SYSTEM</strong><small id="aiStatus">Misi kecil, progres nyata.</small></div>
+    <img id="aiMascot" alt="Suzu, maskot Health Quest" src="" />
+    <div class="ai-head-copy"><strong>SUZU · PARTNER AI</strong><small id="aiStatus">Teman misi kecilmu.</small></div>
     <button class="ai-close" id="aiClose" aria-label="Tutup chat">×</button>
   </div>
   <div class="ai-mission" id="aiMission">QUEST HARI INI · tandai kebiasaanmu untuk mendapat XP.</div>
   <div class="ai-messages" id="aiMessages" aria-live="polite"></div>
   <form class="ai-compose" id="aiForm">
-    <textarea id="aiInput" rows="1" maxlength="1200" placeholder="Tanya menu, latihan, atau progres..." aria-label="Pesan untuk partner AI"></textarea>
+    <textarea id="aiInput" rows="1" maxlength="1200" placeholder="Tanya Suzu tentang menu, latihan, atau progres..." aria-label="Pesan untuk Suzu"></textarea>
     <button class="ai-send" id="aiSend" type="submit">KIRIM</button>
   </form>
   <div class="ai-footnote">AI bisa keliru. Bukan pengganti tenaga medis. Chat tersimpan di browser ini.</div>
@@ -608,10 +608,26 @@ const aiMessages=document.getElementById("aiMessages"), aiInput=document.getElem
 const aiMascot=document.getElementById("aiMascot");
 const mascotSource=document.querySelector(".partner-mascot");
 if(mascotSource && aiMascot) aiMascot.src=mascotSource.src;
+function hqCleanReply(value){
+ // Tampilkan jawaban sebagai teks rapi, bukan sintaks Markdown mentah.
+ return String(value??"")
+   .replace(/```[\s\S]*?```/g, block => block.replace(/^```[^\n]*\n?/,"").replace(/```$/,""))
+   .replace(/^\s{0,3}#{1,6}\s*/gm,"")
+   .replace(/\*\*(.*?)\*\*/gs,"$1")
+   .replace(/__(.*?)__/gs,"$1")
+   .replace(/(?<!\*)\*(?!\*)(.*?)\*(?!\*)/gs,"$1")
+   .replace(/(?<!_)_(?!_)(.*?)_(?!_)/gs,"$1")
+   .replace(/`([^`]+)`/g,"$1")
+   .replace(/^\s*[-*+]\s+/gm,"• ")
+   .replace(/^\s*\d+[.)]\s+/gm,"• ")
+   .replace(/[ \t]+\n/g,"\n")
+   .replace(/\n{3,}/g,"\n\n")
+   .trim();
+}
 function hqAppendMessage(role,text,save=true){
  const node=document.createElement("div");
  node.className="ai-msg "+(role==="user"?"user":role==="error"?"error":"partner");
- node.textContent=text; aiMessages.appendChild(node); aiMessages.scrollTop=aiMessages.scrollHeight;
+ node.textContent=role==="partner"?hqCleanReply(text):String(text); aiMessages.appendChild(node); aiMessages.scrollTop=aiMessages.scrollHeight;
  if(save && (role==="user"||role==="partner")){
    hqChat.push({role:role==="partner"?"model":"user",text:String(text).slice(0,2000)});
    hqChat=hqChat.slice(-24); hqWrite(HQ_CHAT_KEY,hqChat);
@@ -619,7 +635,7 @@ function hqAppendMessage(role,text,save=true){
 }
 function hqRenderChat(){
  aiMessages.innerHTML="";
- if(!hqChat.length) hqAppendMessage("partner","Hai, Player! Aku Partner System-mu. Aku bisa bantu memilih menu, menyederhanakan latihan, membaca progres, dan membuat quest kecil. Progresmu kukirim ke AI hanya saat kamu mengirim pesan.",false);
+ if(!hqChat.length) hqAppendMessage("partner","Hai! Aku Suzu, partner AI dan maskot Health Quest-mu. Aku bisa bantu memilih menu, menyederhanakan latihan, membaca progres, dan membuat misi kecil. Progres hanya dikirim ke AI saat kamu mengirim pesan.",false);
  else hqChat.forEach(m=>hqAppendMessage(m.role==="user"?"user":"partner",m.text,false));
 }
 function hqToggleChat(open){
@@ -632,7 +648,7 @@ document.getElementById("aiClose").addEventListener("click",()=>hqToggleChat(fal
 document.getElementById("aiForm").addEventListener("submit",async(e)=>{
  e.preventDefault();const message=aiInput.value.trim();if(!message||aiSend.disabled)return;
  hqAppendMessage("user",message);aiInput.value="";aiSend.disabled=true;aiSend.textContent="...";
- const wait=document.createElement("div");wait.className="ai-msg partner";wait.textContent="Sedang menyusun strategi...";aiMessages.appendChild(wait);aiMessages.scrollTop=aiMessages.scrollHeight;
+ const wait=document.createElement("div");wait.className="ai-msg partner";wait.textContent="Suzu sedang menyusun strategi...";aiMessages.appendChild(wait);aiMessages.scrollTop=aiMessages.scrollHeight;
  try{
    const response=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
      message,history:hqChat.slice(-12),progress:hqProgressContext()
