@@ -378,6 +378,50 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
  </main>
  <footer>Rencana kebiasaan umum, bukan diagnosis atau resep medis personal. Berat awal masih perkiraan; sesuaikan porsi dan intensitas berdasarkan kondisi tubuh. Data progres tersimpan di browser. Fitur Partner AI memerlukan deployment backend dan API key.</footer>
 </div>
+<section class="plan-modal" id="planModal" aria-hidden="true">
+  <div class="plan-dialog" role="dialog" aria-modal="true" aria-labelledby="planTitle">
+    <div class="plan-dialog-head">
+      <img id="planMascot" alt="Partner sedang menyusun program" src="" />
+      <div><small>PERSONAL PROGRAM GENERATOR</small><h2 id="planTitle">Bangun Ulang Programku</h2><small>Profil tubuh → menu & latihan yang disesuaikan</small></div>
+      <button class="plan-close" id="closePlanBuilder" type="button" aria-label="Tutup">×</button>
+    </div>
+    <form class="plan-form" id="planForm">
+      <label class="plan-field">Usia (tahun)<input name="age" type="number" min="16" max="100" required placeholder="Contoh: 25"></label>
+      <label class="plan-field">Jenis kelamin (opsional)<select name="sex"><option value="prefer_not">Tidak ingin menyebutkan</option><option value="female">Perempuan</option><option value="male">Laki-laki</option><option value="other">Lainnya</option></select></label>
+      <label class="plan-field">Tinggi badan (cm)<input name="heightCm" type="number" min="100" max="250" required placeholder="Contoh: 165"></label>
+      <label class="plan-field">Berat badan saat ini (kg)<input name="weightKg" type="number" min="25" max="350" step="0.1" required placeholder="Contoh: 75"></label>
+      <label class="plan-field">Tujuan utama<select name="goal"><option value="health">Lebih sehat dan konsisten</option><option value="fat_loss">Mengelola berat badan secara bertahap</option><option value="fitness">Meningkatkan kebugaran</option><option value="strength">Meningkatkan kekuatan</option><option value="maintenance">Mempertahankan berat badan</option></select></label>
+      <label class="plan-field">Aktivitas sehari-hari<select name="activity"><option value="low">Banyak duduk / jarang olahraga</option><option value="light">Aktif ringan</option><option value="moderate">Cukup aktif</option><option value="high">Sangat aktif</option></select></label>
+      <label class="plan-field">Anggaran makan per hari (Rp)<input name="budget" type="number" min="0" max="1000000" step="5000" placeholder="Contoh: 35000"></label>
+      <label class="plan-field">Waktu olahraga<select name="workoutTime"><option value="10-15">10–15 menit</option><option value="20-30" selected>20–30 menit</option><option value="30-45">30–45 menit</option><option value="45+">45 menit atau lebih</option></select></label>
+      <label class="plan-field">Peralatan tersedia<select name="equipment"><option value="none">Tanpa alat</option><option value="basic">Matras / kursi / botol air</option><option value="gym">Peralatan gym</option></select></label>
+      <label class="plan-field">Preferensi makanan<input name="foodPrefs" type="text" maxlength="250" placeholder="Contoh: masakan rumahan, suka telur"></label>
+      <label class="plan-field full">Pantangan / alergi makanan<textarea name="allergies" maxlength="500" placeholder="Tuliskan alergi atau bahan yang harus dihindari. Jika tidak ada, kosongkan."></textarea></label>
+      <label class="plan-field full">Kondisi atau batasan latihan<textarea name="limitations" maxlength="500" placeholder="Misalnya nyeri lutut, cedera, kondisi medis, atau keterbatasan gerak. Tidak wajib mencantumkan diagnosis pribadi."></textarea></label>
+      <label class="plan-field full">Jadwal / kebutuhan khusus<textarea name="schedule" maxlength="300" placeholder="Contoh: kerja kantor, latihan setelah pulang kerja, menu mudah dibawa."></textarea></label>
+      <div class="plan-note">Program baru akan menggantikan menu dan latihan 30 hari yang sedang aktif di browser ini. AI menyusun panduan umum, bukan diagnosis atau resep medis. Hindari memasukkan informasi yang tidak diperlukan.</div>
+      <div class="plan-actions"><button class="secondary" id="cancelPlanBuilder" type="button">BATAL</button><button class="primary" id="generatePlanButton" type="submit">✦ GENERATE & GANTI PROGRAM</button></div>
+    </form>
+    <div class="plan-status" id="planStatus" role="status" aria-live="polite"></div>
+  </div>
+</section>
+
+<button class="ai-launcher" id="aiLauncher" aria-controls="aiPanel" aria-expanded="false">✦ PARTNER AI</button>
+<section class="ai-panel" id="aiPanel" aria-label="Chat Partner AI" aria-hidden="true">
+  <div class="ai-head">
+    <img id="aiMascot" alt="Partner chibi" src="" />
+    <div class="ai-head-copy"><strong>PARTNER SYSTEM</strong><small id="aiStatus">Misi kecil, progres nyata.</small></div>
+    <button class="ai-close" id="aiClose" aria-label="Tutup chat">×</button>
+  </div>
+  <div class="ai-mission" id="aiMission">QUEST HARI INI · tandai kebiasaanmu untuk mendapat XP.</div>
+  <div class="ai-messages" id="aiMessages" aria-live="polite"></div>
+  <form class="ai-compose" id="aiForm">
+    <textarea id="aiInput" rows="1" maxlength="1200" placeholder="Tanya menu, latihan, atau progres..." aria-label="Pesan untuk partner AI"></textarea>
+    <button class="ai-send" id="aiSend" type="submit">KIRIM</button>
+  </form>
+  <div class="ai-footnote">AI bisa keliru. Bukan pengganti tenaga medis. Chat tersimpan di browser ini.</div>
+</section>
+
 <script>
 const dinners=[
 ["Ayam bakar, nasi, sayur bening","Ikan bakar, nasi, tumis kangkung"],["Ayam panggang, nasi, capcay","Soto ayam, nasi terpisah"],["Ikan kembung bakar, nasi, sayur","Ayam bakar, lalapan, nasi"],["Nasi, telur, tahu, sayur sop","Pepes ikan, nasi, sayur"],["Ayam bakar, nasi, sayur asem","Gado-gado dan telur"],["Ikan panggang, nasi, tumis buncis","Sup ayam dan nasi"],["Ayam panggang, nasi, capcay","Ikan bakar, nasi, sayur bening"],["Ayam bakar, nasi, lalapan","Soto ayam dengan nasi secukupnya"],["Ikan bakar, nasi, sayur asem","Ayam panggang, tumis sayur"],["Nasi, telur, tahu, capcay","Sup ayam, nasi"],["Ayam bakar, nasi, sayur bening","Pepes ikan, nasi, sayur"],["Gado-gado, telur, saus terpisah","Ayam panggang, nasi, capcay"],["Ikan kembung, nasi, tumis sayur","Soto ayam, nasi terpisah"],["Ayam bakar, nasi, sayur asem","Ikan panggang, nasi, lalapan"],["Nasi, telur, tahu, sayur","Sup ayam, nasi secukupnya"],["Ayam panggang, nasi, capcay","Ikan bakar, nasi, sayur bening"],["Pepes ikan, nasi, sayur","Ayam bakar, nasi, tumis kangkung"],["Gado-gado dengan telur","Ayam panggang, nasi, sayur"],["Ikan bakar, nasi, sayur asem","Sup ayam dan nasi"],["Ayam bakar, nasi, lalapan","Pepes ikan, nasi, sayur bening"],["Ikan panggang, nasi, capcay","Ayam bakar, nasi, sayur"],["Ayam panggang, nasi, sayur bening","Soto ayam, nasi terpisah"],["Ikan kembung, nasi, tumis sayur","Ayam bakar, nasi, capcay"],["Gado-gado dan telur","Sup ayam dengan nasi"],["Ayam bakar, nasi, sayur asem","Ikan panggang, nasi, sayur"],["Pepes ikan, nasi, sayur","Ayam panggang, nasi, capcay"],["Ayam bakar, nasi, lalapan","Sup ayam, nasi secukupnya"],["Ikan bakar, nasi, sayur bening","Ayam panggang, tumis buncis"],["Ayam panggang, nasi, capcay","Pepes ikan, nasi, sayur"],["Ayam bakar, nasi, sayur","Ikan bakar, nasi, sayur asem"]];
@@ -611,52 +655,9 @@ hqLoad();
 renderMeal();renderWorkout();
 hqRenderMissions();
 hqSave();
+
+
+
 </script>
-
-
-<section class="plan-modal" id="planModal" aria-hidden="true">
-  <div class="plan-dialog" role="dialog" aria-modal="true" aria-labelledby="planTitle">
-    <div class="plan-dialog-head">
-      <img id="planMascot" alt="Partner sedang menyusun program" src="" />
-      <div><small>PERSONAL PROGRAM GENERATOR</small><h2 id="planTitle">Bangun Ulang Programku</h2><small>Profil tubuh → menu & latihan yang disesuaikan</small></div>
-      <button class="plan-close" id="closePlanBuilder" type="button" aria-label="Tutup">×</button>
-    </div>
-    <form class="plan-form" id="planForm">
-      <label class="plan-field">Usia (tahun)<input name="age" type="number" min="16" max="100" required placeholder="Contoh: 25"></label>
-      <label class="plan-field">Jenis kelamin (opsional)<select name="sex"><option value="prefer_not">Tidak ingin menyebutkan</option><option value="female">Perempuan</option><option value="male">Laki-laki</option><option value="other">Lainnya</option></select></label>
-      <label class="plan-field">Tinggi badan (cm)<input name="heightCm" type="number" min="100" max="250" required placeholder="Contoh: 165"></label>
-      <label class="plan-field">Berat badan saat ini (kg)<input name="weightKg" type="number" min="25" max="350" step="0.1" required placeholder="Contoh: 75"></label>
-      <label class="plan-field">Tujuan utama<select name="goal"><option value="health">Lebih sehat dan konsisten</option><option value="fat_loss">Mengelola berat badan secara bertahap</option><option value="fitness">Meningkatkan kebugaran</option><option value="strength">Meningkatkan kekuatan</option><option value="maintenance">Mempertahankan berat badan</option></select></label>
-      <label class="plan-field">Aktivitas sehari-hari<select name="activity"><option value="low">Banyak duduk / jarang olahraga</option><option value="light">Aktif ringan</option><option value="moderate">Cukup aktif</option><option value="high">Sangat aktif</option></select></label>
-      <label class="plan-field">Anggaran makan per hari (Rp)<input name="budget" type="number" min="0" max="1000000" step="5000" placeholder="Contoh: 35000"></label>
-      <label class="plan-field">Waktu olahraga<select name="workoutTime"><option value="10-15">10–15 menit</option><option value="20-30" selected>20–30 menit</option><option value="30-45">30–45 menit</option><option value="45+">45 menit atau lebih</option></select></label>
-      <label class="plan-field">Peralatan tersedia<select name="equipment"><option value="none">Tanpa alat</option><option value="basic">Matras / kursi / botol air</option><option value="gym">Peralatan gym</option></select></label>
-      <label class="plan-field">Preferensi makanan<input name="foodPrefs" type="text" maxlength="250" placeholder="Contoh: masakan rumahan, suka telur"></label>
-      <label class="plan-field full">Pantangan / alergi makanan<textarea name="allergies" maxlength="500" placeholder="Tuliskan alergi atau bahan yang harus dihindari. Jika tidak ada, kosongkan."></textarea></label>
-      <label class="plan-field full">Kondisi atau batasan latihan<textarea name="limitations" maxlength="500" placeholder="Misalnya nyeri lutut, cedera, kondisi medis, atau keterbatasan gerak. Tidak wajib mencantumkan diagnosis pribadi."></textarea></label>
-      <label class="plan-field full">Jadwal / kebutuhan khusus<textarea name="schedule" maxlength="300" placeholder="Contoh: kerja kantor, latihan setelah pulang kerja, menu mudah dibawa."></textarea></label>
-      <div class="plan-note">Program baru akan menggantikan menu dan latihan 30 hari yang sedang aktif di browser ini. AI menyusun panduan umum, bukan diagnosis atau resep medis. Hindari memasukkan informasi yang tidak diperlukan.</div>
-      <div class="plan-actions"><button class="secondary" id="cancelPlanBuilder" type="button">BATAL</button><button class="primary" id="generatePlanButton" type="submit">✦ GENERATE & GANTI PROGRAM</button></div>
-    </form>
-    <div class="plan-status" id="planStatus" role="status" aria-live="polite"></div>
-  </div>
-</section>
-
-<button class="ai-launcher" id="aiLauncher" aria-controls="aiPanel" aria-expanded="false">✦ PARTNER AI</button>
-<section class="ai-panel" id="aiPanel" aria-label="Chat Partner AI" aria-hidden="true">
-  <div class="ai-head">
-    <img id="aiMascot" alt="Partner chibi" src="" />
-    <div class="ai-head-copy"><strong>PARTNER SYSTEM</strong><small id="aiStatus">Misi kecil, progres nyata.</small></div>
-    <button class="ai-close" id="aiClose" aria-label="Tutup chat">×</button>
-  </div>
-  <div class="ai-mission" id="aiMission">QUEST HARI INI · tandai kebiasaanmu untuk mendapat XP.</div>
-  <div class="ai-messages" id="aiMessages" aria-live="polite"></div>
-  <form class="ai-compose" id="aiForm">
-    <textarea id="aiInput" rows="1" maxlength="1200" placeholder="Tanya menu, latihan, atau progres..." aria-label="Pesan untuk partner AI"></textarea>
-    <button class="ai-send" id="aiSend" type="submit">KIRIM</button>
-  </form>
-  <div class="ai-footnote">AI bisa keliru. Bukan pengganti tenaga medis. Chat tersimpan di browser ini.</div>
-</section>
-
 </body>
 </html>
