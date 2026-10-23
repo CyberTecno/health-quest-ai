@@ -247,6 +247,21 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .plan-success{margin:18px;padding:14px;background:#eaf3ec;border:1px solid #8bb99b;font-size:12px;line-height:1.55}
 @media(max-width:620px){.plan-form{grid-template-columns:1fr;padding:13px}.plan-field.full,.plan-note,.plan-actions{grid-column:1}.plan-dialog-head h2{font-size:21px}.plan-dialog-head img{width:46px;height:46px}}
 
+
+/* Health Quest: exercise carousel and meal photography */
+.exercise-carousel{border:1px solid var(--line);padding:18px;margin-top:14px;background:var(--surface,#fff)}
+.exercise-slide{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:center}
+.exercise-visual{display:flex;align-items:center;justify-content:center;background:#f7f6f0;min-height:260px;overflow:hidden}
+.exercise-visual img{display:block;width:100%;height:300px;object-fit:contain}
+.exercise-copy h3{margin:8px 0}.exercise-copy p{line-height:1.65}.exercise-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px}
+.exercise-controls button{border:1px solid var(--line);padding:11px 16px;cursor:pointer;font-weight:800;background:#fff}.exercise-controls .primary{background:var(--yellow,#ffe600);color:#111}
+.exercise-counter{font-weight:800;color:var(--muted)}
+.meal-photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:16px 0}
+.meal-photo-card{border:1px solid var(--line);overflow:hidden;background:#fff;display:flex;flex-direction:column}
+.meal-photo-card img{width:100%;height:145px;object-fit:cover;display:block}
+.meal-photo-card .meal-photo-text{padding:12px;flex:1}.meal-photo-card small{font-weight:800;color:var(--muted);letter-spacing:.08em}.meal-photo-card p{margin:6px 0 0;line-height:1.45}
+@media(max-width:760px){.exercise-slide{grid-template-columns:1fr}.exercise-visual{min-height:200px}.exercise-visual img{height:240px}.meal-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.meal-photo-card img{height:120px}.exercise-controls button{padding:10px 11px}}
+
 </style>
 </head>
 <body>
@@ -315,6 +330,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
    <div class="card">
     <div class="eyebrow">Rencana makan malam</div><h2>Menu 30 hari</h2><p class="sub">Pilih hari untuk melihat dua opsi. Menu dan harga bergantung pada ketersediaan penjual. Jika opsi tidak masuk anggaran, pilih pengganti sederhana.</p>
     <div id="mealDays" class="daybar"></div><div id="mealDetail"></div>
+    <h3>Galeri pilihan menu</h3><p class="sub">Referensi visual makanan untuk membantu memilih menu. Foto bersifat ilustrasi penyajian; menu asli dan porsinya bisa berbeda.</p>
+    <div class="meal-photo-grid" id="mealPhotoGrid"></div>
     <div class="callout orange"><strong>Patokan porsi awal</strong><p>Nasi matang sekitar 150–200 g, lauk protein sekitar 150–200 g bagian yang bisa dimakan, dan sayur sekitar 150–250 g jika tersedia. Sesuaikan dengan menu kantor, rasa lapar, dan kebutuhan tubuh.</p></div>
    </div>
    <div class="card"><h2>Kalau menu tidak tersedia</h2><table><thead><tr><th>Menu awal</th><th>Pengganti</th></tr></thead><tbody>
@@ -376,63 +393,43 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
    </div>
   </section>
  </main>
- <footer>Rencana kebiasaan umum, bukan diagnosis atau resep medis personal. Berat awal masih perkiraan; sesuaikan porsi dan intensitas berdasarkan kondisi tubuh. Data progres tersimpan di browser. Fitur Partner AI memerlukan deployment backend dan API key.</footer>
 </div>
-<section class="plan-modal" id="planModal" aria-hidden="true">
-  <div class="plan-dialog" role="dialog" aria-modal="true" aria-labelledby="planTitle">
-    <div class="plan-dialog-head">
-      <img id="planMascot" alt="Partner sedang menyusun program" src="" />
-      <div><small>PERSONAL PROGRAM GENERATOR</small><h2 id="planTitle">Bangun Ulang Programku</h2><small>Profil tubuh → menu & latihan yang disesuaikan</small></div>
-      <button class="plan-close" id="closePlanBuilder" type="button" aria-label="Tutup">×</button>
-    </div>
-    <form class="plan-form" id="planForm">
-      <label class="plan-field">Usia (tahun)<input name="age" type="number" min="16" max="100" required placeholder="Contoh: 25"></label>
-      <label class="plan-field">Jenis kelamin (opsional)<select name="sex"><option value="prefer_not">Tidak ingin menyebutkan</option><option value="female">Perempuan</option><option value="male">Laki-laki</option><option value="other">Lainnya</option></select></label>
-      <label class="plan-field">Tinggi badan (cm)<input name="heightCm" type="number" min="100" max="250" required placeholder="Contoh: 165"></label>
-      <label class="plan-field">Berat badan saat ini (kg)<input name="weightKg" type="number" min="25" max="350" step="0.1" required placeholder="Contoh: 75"></label>
-      <label class="plan-field">Tujuan utama<select name="goal"><option value="health">Lebih sehat dan konsisten</option><option value="fat_loss">Mengelola berat badan secara bertahap</option><option value="fitness">Meningkatkan kebugaran</option><option value="strength">Meningkatkan kekuatan</option><option value="maintenance">Mempertahankan berat badan</option></select></label>
-      <label class="plan-field">Aktivitas sehari-hari<select name="activity"><option value="low">Banyak duduk / jarang olahraga</option><option value="light">Aktif ringan</option><option value="moderate">Cukup aktif</option><option value="high">Sangat aktif</option></select></label>
-      <label class="plan-field">Anggaran makan per hari (Rp)<input name="budget" type="number" min="0" max="1000000" step="5000" placeholder="Contoh: 35000"></label>
-      <label class="plan-field">Waktu olahraga<select name="workoutTime"><option value="10-15">10–15 menit</option><option value="20-30" selected>20–30 menit</option><option value="30-45">30–45 menit</option><option value="45+">45 menit atau lebih</option></select></label>
-      <label class="plan-field">Peralatan tersedia<select name="equipment"><option value="none">Tanpa alat</option><option value="basic">Matras / kursi / botol air</option><option value="gym">Peralatan gym</option></select></label>
-      <label class="plan-field">Preferensi makanan<input name="foodPrefs" type="text" maxlength="250" placeholder="Contoh: masakan rumahan, suka telur"></label>
-      <label class="plan-field full">Pantangan / alergi makanan<textarea name="allergies" maxlength="500" placeholder="Tuliskan alergi atau bahan yang harus dihindari. Jika tidak ada, kosongkan."></textarea></label>
-      <label class="plan-field full">Kondisi atau batasan latihan<textarea name="limitations" maxlength="500" placeholder="Misalnya nyeri lutut, cedera, kondisi medis, atau keterbatasan gerak. Tidak wajib mencantumkan diagnosis pribadi."></textarea></label>
-      <label class="plan-field full">Jadwal / kebutuhan khusus<textarea name="schedule" maxlength="300" placeholder="Contoh: kerja kantor, latihan setelah pulang kerja, menu mudah dibawa."></textarea></label>
-      <div class="plan-note">Program baru akan menggantikan menu dan latihan 30 hari yang sedang aktif di browser ini. AI menyusun panduan umum, bukan diagnosis atau resep medis. Hindari memasukkan informasi yang tidak diperlukan.</div>
-      <div class="plan-actions"><button class="secondary" id="cancelPlanBuilder" type="button">BATAL</button><button class="primary" id="generatePlanButton" type="submit">✦ GENERATE & GANTI PROGRAM</button></div>
-    </form>
-    <div class="plan-status" id="planStatus" role="status" aria-live="polite"></div>
-  </div>
-</section>
-
-<button class="ai-launcher" id="aiLauncher" aria-controls="aiPanel" aria-expanded="false">✦ CHAT SUZU</button>
-<section class="ai-panel" id="aiPanel" aria-label="Chat Suzu, partner AI Health Quest" aria-hidden="true">
-  <div class="ai-head">
-    <img id="aiMascot" alt="Suzu, maskot Health Quest" src="" />
-    <div class="ai-head-copy"><strong>SUZU · PARTNER AI</strong><small id="aiStatus">Teman misi kecilmu.</small></div>
-    <button class="ai-close" id="aiClose" aria-label="Tutup chat">×</button>
-  </div>
-  <div class="ai-mission" id="aiMission">QUEST HARI INI · tandai kebiasaanmu untuk mendapat XP.</div>
-  <div class="ai-messages" id="aiMessages" aria-live="polite"></div>
-  <form class="ai-compose" id="aiForm">
-    <textarea id="aiInput" rows="1" maxlength="1200" placeholder="Tanya Suzu tentang menu, latihan, atau progres..." aria-label="Pesan untuk Suzu"></textarea>
-    <button class="ai-send" id="aiSend" type="submit">KIRIM</button>
-  </form>
-  <div class="ai-footnote">AI bisa keliru. Bukan pengganti tenaga medis. Chat tersimpan di browser ini.</div>
-</section>
-
 <script>
 const dinners=[
 ["Ayam bakar, nasi, sayur bening","Ikan bakar, nasi, tumis kangkung"],["Ayam panggang, nasi, capcay","Soto ayam, nasi terpisah"],["Ikan kembung bakar, nasi, sayur","Ayam bakar, lalapan, nasi"],["Nasi, telur, tahu, sayur sop","Pepes ikan, nasi, sayur"],["Ayam bakar, nasi, sayur asem","Gado-gado dan telur"],["Ikan panggang, nasi, tumis buncis","Sup ayam dan nasi"],["Ayam panggang, nasi, capcay","Ikan bakar, nasi, sayur bening"],["Ayam bakar, nasi, lalapan","Soto ayam dengan nasi secukupnya"],["Ikan bakar, nasi, sayur asem","Ayam panggang, tumis sayur"],["Nasi, telur, tahu, capcay","Sup ayam, nasi"],["Ayam bakar, nasi, sayur bening","Pepes ikan, nasi, sayur"],["Gado-gado, telur, saus terpisah","Ayam panggang, nasi, capcay"],["Ikan kembung, nasi, tumis sayur","Soto ayam, nasi terpisah"],["Ayam bakar, nasi, sayur asem","Ikan panggang, nasi, lalapan"],["Nasi, telur, tahu, sayur","Sup ayam, nasi secukupnya"],["Ayam panggang, nasi, capcay","Ikan bakar, nasi, sayur bening"],["Pepes ikan, nasi, sayur","Ayam bakar, nasi, tumis kangkung"],["Gado-gado dengan telur","Ayam panggang, nasi, sayur"],["Ikan bakar, nasi, sayur asem","Sup ayam dan nasi"],["Ayam bakar, nasi, lalapan","Pepes ikan, nasi, sayur bening"],["Ikan panggang, nasi, capcay","Ayam bakar, nasi, sayur"],["Ayam panggang, nasi, sayur bening","Soto ayam, nasi terpisah"],["Ikan kembung, nasi, tumis sayur","Ayam bakar, nasi, capcay"],["Gado-gado dan telur","Sup ayam dengan nasi"],["Ayam bakar, nasi, sayur asem","Ikan panggang, nasi, sayur"],["Pepes ikan, nasi, sayur","Ayam panggang, nasi, capcay"],["Ayam bakar, nasi, lalapan","Sup ayam, nasi secukupnya"],["Ikan bakar, nasi, sayur bening","Ayam panggang, tumis buncis"],["Ayam panggang, nasi, capcay","Pepes ikan, nasi, sayur"],["Ayam bakar, nasi, sayur","Ikan bakar, nasi, sayur asem"]];
+
+const extraDinners=["Nasi, telur rebus, tahu, dan sayur bening","Ayam panggang, nasi, dan tumis buncis","Ikan kembung, nasi, dan capcay","Gado-gado dengan telur dan saus terpisah","Sup ayam, nasi secukupnya, dan sayur","Tempe, tahu, nasi, dan tumis kangkung","Pepes ikan, nasi, dan sayur asem","Nasi, telur dadar, dan tumis sayuran","Ayam ungkep, nasi, dan lalapan","Tumis tahu-tempe, nasi, dan sayur sop"];
+const foodImages=[{key:"ayam",src:"/assets/food/ayam-bakar.webp",label:"Ayam bakar dan nasi"},{key:"ikan",src:"/assets/food/ikan-bakar.webp",label:"Ikan bakar dan sayur"},{key:"gado",src:"/assets/food/gado-gado.webp",label:"Gado-gado dan telur"},{key:"soto|sup",src:"/assets/food/soto-ayam.webp",label:"Soto ayam"},{key:"capcay|tumis|sayur",src:"/assets/food/capcay.webp",label:"Sayur dan capcay"},{key:"telur|tahu|tempe|nasi",src:"/assets/food/nasi-telur-tahu.webp",label:"Nasi, telur, dan tahu"}];
+function foodImageFor(text){const low=String(text).toLowerCase();const found=foodImages.find(x=>x.key.split("|").some(k=>low.includes(k)));return found||foodImages[0]}
+function renderMealPhotos(){const el=document.getElementById("mealPhotoGrid");if(!el)return;const foods=[...new Set(dinners.flat().concat(extraDinners))].slice(0,18);el.innerHTML=foods.map((name,i)=>{const f=foodImageFor(name);return `<article class="meal-photo-card"><img src="${f.src}" alt="${hqEsc(name)}" loading="lazy"><div class="meal-photo-text"><small>MENU ${String(i+1).padStart(2,"0")}</small><p>${hqEsc(name)}</p></div></article>`}).join("")}
+
 const workoutType=Array.from({length:30},(_,i)=>[0,2,4,5,7,9,11,12,14,16,18,19,21,23,25,26,28].includes(i)?"A":[1,3,8,10,15,17,22,24,29].includes(i)?"B":"C");
 let mealDay=1,workDay=1;const mealDone=new Set(),workDone=new Set();
 let hqCustomProgram=hqRead("healthQuestCustomProgram.v1",null);
 
 function renderDays(id,selected,done,cb){const el=document.getElementById(id);el.innerHTML="";for(let n=1;n<=30;n++){const b=document.createElement("button");b.className="daybtn"+(n===selected?" active":"")+(done.has(n)?" done":"");b.textContent=n;b.setAttribute("aria-label","Hari "+n);b.onclick=()=>cb(n);el.appendChild(b)}}
-function renderMeal(){renderDays("mealDays",mealDay,mealDone,n=>{mealDay=n;renderMeal()});const a=(hqCustomProgram?.days?.[mealDay-1]?.meals?.length>=2)?hqCustomProgram.days[mealDay-1].meals:dinners[mealDay-1];document.getElementById("mealDetail").innerHTML=`<h3>Hari ${mealDay}${hqCustomProgram?" · Program personal":""}</h3><div class="menu-options"><div class="option"><small>PILIHAN A</small><p>${hqEsc(a[0])}</p></div><div class="option"><small>PILIHAN B</small><p>${hqEsc(a[1])}</p></div></div>${hqCustomProgram?.days?.[mealDay-1]?.mealNote?`<p class="muted">${hqEsc(hqCustomProgram.days[mealDay-1].mealNote)}</p>`:""}<div class="actions"><button class="primary" id="mealMark">${mealDone.has(mealDay)?"Batalkan catatan":"Tandai makan malam selesai"}</button></div>`;document.getElementById("mealMark").onclick=()=>{mealDone.has(mealDay)?mealDone.delete(mealDay):mealDone.add(mealDay);hqMarkActivity();renderMeal();hqSave()}}
+function renderMeal(){renderDays("mealDays",mealDay,mealDone,n=>{mealDay=n;renderMeal()});const base=(hqCustomProgram?.days?.[mealDay-1]?.meals?.length>=2)?hqCustomProgram.days[mealDay-1].meals:dinners[mealDay-1];const opts=[...base];if(!hqCustomProgram)opts.push(extraDinners[(mealDay-1)%extraDinners.length]);const markup=opts.map((name,i)=>{const f=foodImageFor(name);return `<article class="meal-photo-card"><img src="${f.src}" alt="${hqEsc(name)}" loading="lazy"><div class="meal-photo-text"><small>PILIHAN ${String.fromCharCode(65+i)}</small><p>${hqEsc(name)}</p></div></article>`}).join("");document.getElementById("mealDetail").innerHTML=`<h3>Hari ${mealDay}${hqCustomProgram?" · Program personal":""}</h3><div class="meal-photo-grid">${markup}</div>${hqCustomProgram?.days?.[mealDay-1]?.mealNote?`<p class="muted">${hqEsc(hqCustomProgram.days[mealDay-1].mealNote)}</p>`:""}<div class="actions"><button class="primary" id="mealMark">${mealDone.has(mealDay)?"Batalkan catatan":"Tandai makan malam selesai"}</button></div>`;document.getElementById("mealMark").onclick=()=>{mealDone.has(mealDay)?mealDone.delete(mealDay):mealDone.add(mealDay);hqMarkActivity();renderMeal();hqSave()}}
 function getMinutes(day,type){if(type==="C")return "Istirahat atau 5–10 menit ringan";if(day<=7)return type==="A"?"15–20 menit":"15–20 menit";if(day<=14)return type==="A"?"20–25 menit":"20–25 menit";if(day<=21)return type==="A"?"25–30 menit":"20–25 menit";return type==="A"?"30–35 menit":"20–30 menit"}
-function renderWorkout(){renderDays("workoutDays",workDay,workDone,n=>{workDay=n;renderWorkout()});if(hqCustomProgram?.days?.[workDay-1]?.workout){const w=hqCustomProgram.days[workDay-1].workout;const title=hqEsc(w.title||"Latihan personal");const exercises=Array.isArray(w.exercises)?w.exercises:[];const body=w.rest?`<p>${hqEsc(w.description||"Hari pemulihan. Lakukan aktivitas ringan sesuai kenyamanan.")}</p>`:`<ul class="clean">${exercises.map(x=>`<li>${hqEsc(String(x))}</li>`).join("")}</ul>`;document.getElementById("workoutDetail").innerHTML=`<h3>Hari ${workDay}: ${title}</h3><p class="muted">Durasi sasaran: ${hqEsc(w.duration||"sesuai kenyamanan")}</p><p>${hqEsc(w.description||"Sesuaikan intensitas dengan kemampuan dan berhenti jika terasa sakit.")}</p>${body}<div class="actions"><button class="primary" id="workMark">${workDone.has(workDay)?"Batalkan catatan":"Tandai latihan selesai"}</button></div>`;document.getElementById("workMark").onclick=()=>{workDone.has(workDay)?workDone.delete(workDay):workDone.add(workDay);hqMarkActivity();renderWorkout();hqSave()};return}const t=workoutType[workDay-1],title=t==="A"?"Kardio low-impact":t==="B"?"Latihan kekuatan":"Pemulihan";let body=t==="A"?`<ul class="clean"><li>Pemanasan 5 menit.</li><li>Jalan di tempat 1–3 menit, selingi istirahat.</li><li>Langkah kanan-kiri dan sentuh tumit ke depan.</li><li>Pendinginan 3–5 menit.</li></ul>`:t==="B"?`<ul class="clean"><li>Pemanasan 5 menit.</li><li>Sit-to-stand: 8–12 repetisi.</li><li>Push-up dinding: 8–12 repetisi.</li><li>Calf raise: 10–15 repetisi.</li><li>Glute bridge: 8–12 repetisi jika nyaman.</li><li>Mulai 1 set; tambah menjadi 2 set jika sudah mampu.</li></ul>`:`<p>Istirahat penuh boleh dilakukan. Jika nyaman, lakukan peregangan ringan 5–10 menit.</p>`;document.getElementById("workoutDetail").innerHTML=`<h3>Hari ${workDay}: ${title}</h3><p class="muted">Durasi sasaran: ${getMinutes(workDay,t)}</p>${body}<div class="actions"><button class="primary" id="workMark">${workDone.has(workDay)?"Batalkan catatan":"Tandai latihan selesai"}</button></div>`;document.getElementById("workMark").onclick=()=>{workDone.has(workDay)?workDone.delete(workDay):workDone.add(workDay);hqMarkActivity();renderWorkout();hqSave()}}
+const exerciseLibrary=[
+{id:"warm-up",name:"Pemanasan",duration:"3–5 menit",desc:"Mulai dengan jalan di tempat dan gerakkan bahu perlahan. Jaga napas tetap nyaman.",img:"/assets/exercise/warm-up.jpg",reps:"Lakukan dengan ritme santai."},
+{id:"march-in-place",name:"Jalan di tempat",duration:"1–3 menit",desc:"Angkat lutut bergantian setinggi yang nyaman. Ayunkan lengan secara alami dan jangan melompat.",img:"/assets/exercise/march-in-place.jpg",reps:"Berhenti sejenak jika mulai kehabisan napas."},
+{id:"side-step",name:"Langkah kanan-kiri",duration:"1–3 menit",desc:"Langkahkan satu kaki ke samping, lalu rapatkan kaki lainnya. Ulangi ke arah sebaliknya tanpa menyilangkan kaki.",img:"/assets/exercise/side-step.jpg",reps:"Gerakkan kaki dengan terkontrol."},
+{id:"heel-touch",name:"Sentuh tumit ke depan",duration:"1–2 menit",desc:"Letakkan satu tumit ke depan dengan ujung kaki terangkat, kembalikan, lalu ganti kaki. Jaga badan tetap tegak.",img:"/assets/exercise/heel-touch.jpg",reps:"Bergantian kanan dan kiri."},
+{id:"sit-to-stand",name:"Sit-to-stand",duration:"8–12 repetisi",desc:"Dari kursi kokoh, berdiri dengan mendorong lantai menggunakan kedua kaki, lalu duduk perlahan. Gunakan tangan untuk membantu jika perlu.",img:"/assets/exercise/sit-to-stand.jpg",reps:"Mulai 1 set; utamakan gerakan terkontrol."},
+{id:"wall-push-up",name:"Push-up dinding",duration:"8–12 repetisi",desc:"Tempelkan telapak tangan ke dinding setinggi dada. Tekuk siku mendekat ke dinding, lalu dorong kembali. Jaga tubuh tetap lurus.",img:"/assets/exercise/wall-push-up.jpg",reps:"Jangan mengunci siku dengan keras."},
+{id:"calf-raise",name:"Calf raise",duration:"10–15 repetisi",desc:"Pegang sandaran kursi kokoh, angkat kedua tumit, lalu turunkan perlahan. Jangan bergoyang atau memiringkan pergelangan kaki.",img:"/assets/exercise/calf-raise.jpg",reps:"Gunakan kursi untuk keseimbangan."},
+{id:"glute-bridge",name:"Glute bridge",duration:"8–12 repetisi",desc:"Berbaring telentang dengan lutut ditekuk dan kaki menapak. Angkat panggul sampai bahu, pinggul, dan lutut hampir segaris, lalu turunkan perlahan.",img:"/assets/exercise/glute-bridge.jpg",reps:"Lewati jika posisi ini menimbulkan nyeri."},
+{id:"push-up",name:"Push-up lutut",duration:"6–10 repetisi",desc:"Mulai dari posisi merangkak, letakkan lutut di matras dan tangan sedikit lebih lebar dari bahu. Turunkan dada secara terkendali lalu dorong kembali.",img:"/assets/exercise/push-up.jpg",reps:"Lakukan hanya jika nyaman; alternatifnya push-up dinding."},
+{id:"plank",name:"Plank lutut",duration:"10–20 detik",desc:"Tumpukan lengan bawah dan lutut pada matras, jaga tubuh dari kepala sampai pinggul tetap sejajar. Bernapas normal dan jangan menahan napas.",img:"/assets/exercise/plank.jpg",reps:"Hentikan jika punggung atau bahu terasa sakit."},
+{id:"sit-up",name:"Sit-up ringan",duration:"6–10 repetisi",desc:"Berbaring dengan lutut ditekuk. Angkat kepala dan bahu sedikit menggunakan otot perut tanpa menarik leher, lalu kembali perlahan.",img:"/assets/exercise/sit-up.jpg",reps:"Boleh diganti dengan mengencangkan perut sambil berbaring."},
+{id:"recovery-stretch",name:"Peregangan pemulihan",duration:"5–10 menit",desc:"Dengan bantuan kursi, tempatkan satu kaki sedikit di depan dengan tumit menapak. Condongkan tubuh dari pinggul dengan punggung tetap lurus sampai terasa tarikan ringan.",img:"/assets/exercise/recovery-stretch.jpg",reps:"Jangan memaksakan jangkauan atau memantul."},
+{id:"cool-down",name:"Pendinginan",duration:"3–5 menit",desc:"Perlambat langkah, rilekskan bahu, dan atur napas sampai terasa lebih tenang. Jangan langsung berhenti mendadak setelah kardio.",img:"/assets/exercise/cool-down.jpg",reps:"Akhiri dengan berdiri nyaman."},
+{id:"rest-day",name:"Hari pemulihan",duration:"Istirahat",desc:"Tidak perlu latihan berat. Jika nyaman, lakukan aktivitas harian ringan dan minum air sesuai kebutuhan.",img:"/assets/exercise/rest-day.jpg",reps:"Pemulihan juga bagian dari latihan."}
+];
+let exerciseIndex=0;
+function workoutSteps(day,type){if(type==="A")return [0,1,2,3,12];if(type==="B")return [0,4,5,6,7,12];return [11,12]}
+function renderWorkout(){renderDays("workoutDays",workDay,workDone,n=>{workDay=n;exerciseIndex=0;renderWorkout()});const custom=hqCustomProgram?.days?.[workDay-1]?.workout;const t=workoutType[workDay-1];const title=custom?.title|| (t==="A"?"Kardio low-impact":t==="B"?"Latihan kekuatan":"Pemulihan");let steps=custom?(custom.rest?[12]:[0,4,5,6,7,12]):workoutSteps(workDay,t);exerciseIndex=Math.min(exerciseIndex,steps.length-1);const ex=exerciseLibrary[steps[exerciseIndex]];const customDesc=custom&&!custom.rest?custom.exercises?.[Math.max(0,exerciseIndex-1)]:null;document.getElementById("workoutDetail").innerHTML=`<div class="exercise-carousel"><div class="eyebrow">HARI ${workDay} · GERAKAN ${exerciseIndex+1} DARI ${steps.length}</div><div class="exercise-slide"><div class="exercise-visual"><img src="${ex.img}" alt="Suzu melakukan gerakan ${hqEsc(ex.name)}" loading="lazy"></div><div class="exercise-copy"><div class="eyebrow">${hqEsc(title)}</div><h3>${hqEsc(customDesc||ex.name)}</h3><p class="muted">Durasi / target: ${hqEsc(ex.duration)}</p><p>${hqEsc(custom?.description&&exerciseIndex===0?custom.description:ex.desc)}</p><p>${hqEsc(ex.reps)}</p></div></div><div class="exercise-controls"><button id="exercisePrev" ${exerciseIndex===0?"disabled":""}>← Sebelumnya</button><span class="exercise-counter">${exerciseIndex+1} / ${steps.length}</span><button class="primary" id="exerciseNext">${exerciseIndex===steps.length-1?"Ulangi gerakan":"Gerakan berikutnya →"}</button></div><div class="actions"><button class="primary" id="workMark">${workDone.has(workDay)?"Batalkan catatan":"Tandai latihan selesai"}</button></div></div>`;document.getElementById("exercisePrev").onclick=()=>{exerciseIndex=Math.max(0,exerciseIndex-1);renderWorkout()};document.getElementById("exerciseNext").onclick=()=>{exerciseIndex=exerciseIndex>=steps.length-1?0:exerciseIndex+1;renderWorkout()};document.getElementById("workMark").onclick=()=>{workDone.has(workDay)?workDone.delete(workDay):workDone.add(workDay);hqMarkActivity();renderWorkout();hqSave()}}
+
 document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===b.dataset.tab));window.scrollTo({top:document.querySelector("nav").offsetTop-8,behavior:"smooth"})}));
 document.querySelectorAll("#dailyChecks input").forEach(ch=>ch.addEventListener("change",()=>{ch.parentElement.classList.toggle("done",ch.checked);const n=[...document.querySelectorAll("#dailyChecks input")].filter(x=>x.checked).length;document.getElementById("dailyProgress").style.width=(n/5*100)+"%";document.getElementById("dailyText").textContent=`${n} dari 5 kebiasaan ditandai.`}));
 document.getElementById("resetChecks").onclick=()=>{document.querySelectorAll("#dailyChecks input").forEach(ch=>{ch.checked=false;ch.parentElement.classList.remove("done")});document.getElementById("dailyProgress").style.width="0%";document.getElementById("dailyText").textContent="0 dari 5 kebiasaan ditandai."};
@@ -577,7 +574,7 @@ document.getElementById("planForm").addEventListener("submit",async e=>{
    hqCustomProgram=normalized;hqWrite("healthQuestCustomProgram.v1",normalized);
    // Replacing the active program resets completion marks so old ticks don't falsely represent the new plan.
    mealDone.clear();workDone.clear();hqState.mealDone=[];hqState.workDone=[];hqState.missionsDone=[];hqState.missionDate=hqToday();hqSave();
-   mealDay=1;workDay=1;renderMeal();renderWorkout();hqRenderMissions();
+   mealDay=1;workDay=1;renderMeal();renderMealPhotos();renderWorkout();hqRenderMissions();
    planStatus.className="plan-success";
    planStatus.textContent="Program baru berhasil diterapkan. Menu dan latihan 30 hari sebelumnya sekarang digantikan di browser ini. Ringkasan: "+normalized.summary;
    const success=document.createElement("p");success.textContent="Tutup jendela ini untuk melihat menu dan latihan baru. Kamu bisa membuat ulang program kapan saja.";
@@ -608,26 +605,10 @@ const aiMessages=document.getElementById("aiMessages"), aiInput=document.getElem
 const aiMascot=document.getElementById("aiMascot");
 const mascotSource=document.querySelector(".partner-mascot");
 if(mascotSource && aiMascot) aiMascot.src=mascotSource.src;
-function hqCleanReply(value){
- // Tampilkan jawaban sebagai teks rapi, bukan sintaks Markdown mentah.
- return String(value??"")
-   .replace(/```[\s\S]*?```/g, block => block.replace(/^```[^\n]*\n?/,"").replace(/```$/,""))
-   .replace(/^\s{0,3}#{1,6}\s*/gm,"")
-   .replace(/\*\*(.*?)\*\*/gs,"$1")
-   .replace(/__(.*?)__/gs,"$1")
-   .replace(/(?<!\*)\*(?!\*)(.*?)\*(?!\*)/gs,"$1")
-   .replace(/(?<!_)_(?!_)(.*?)_(?!_)/gs,"$1")
-   .replace(/`([^`]+)`/g,"$1")
-   .replace(/^\s*[-*+]\s+/gm,"• ")
-   .replace(/^\s*\d+[.)]\s+/gm,"• ")
-   .replace(/[ \t]+\n/g,"\n")
-   .replace(/\n{3,}/g,"\n\n")
-   .trim();
-}
 function hqAppendMessage(role,text,save=true){
  const node=document.createElement("div");
  node.className="ai-msg "+(role==="user"?"user":role==="error"?"error":"partner");
- node.textContent=role==="partner"?hqCleanReply(text):String(text); aiMessages.appendChild(node); aiMessages.scrollTop=aiMessages.scrollHeight;
+ node.textContent=text; aiMessages.appendChild(node); aiMessages.scrollTop=aiMessages.scrollHeight;
  if(save && (role==="user"||role==="partner")){
    hqChat.push({role:role==="partner"?"model":"user",text:String(text).slice(0,2000)});
    hqChat=hqChat.slice(-24); hqWrite(HQ_CHAT_KEY,hqChat);
@@ -635,7 +616,7 @@ function hqAppendMessage(role,text,save=true){
 }
 function hqRenderChat(){
  aiMessages.innerHTML="";
- if(!hqChat.length) hqAppendMessage("partner","Hai! Aku Suzu, partner AI dan maskot Health Quest-mu. Aku bisa bantu memilih menu, menyederhanakan latihan, membaca progres, dan membuat misi kecil. Progres hanya dikirim ke AI saat kamu mengirim pesan.",false);
+ if(!hqChat.length) hqAppendMessage("partner","Hai, Player! Aku Partner System-mu. Aku bisa bantu memilih menu, menyederhanakan latihan, membaca progres, dan membuat quest kecil. Progresmu kukirim ke AI hanya saat kamu mengirim pesan.",false);
  else hqChat.forEach(m=>hqAppendMessage(m.role==="user"?"user":"partner",m.text,false));
 }
 function hqToggleChat(open){
@@ -648,7 +629,7 @@ document.getElementById("aiClose").addEventListener("click",()=>hqToggleChat(fal
 document.getElementById("aiForm").addEventListener("submit",async(e)=>{
  e.preventDefault();const message=aiInput.value.trim();if(!message||aiSend.disabled)return;
  hqAppendMessage("user",message);aiInput.value="";aiSend.disabled=true;aiSend.textContent="...";
- const wait=document.createElement("div");wait.className="ai-msg partner";wait.textContent="Suzu sedang menyusun strategi...";aiMessages.appendChild(wait);aiMessages.scrollTop=aiMessages.scrollHeight;
+ const wait=document.createElement("div");wait.className="ai-msg partner";wait.textContent="Sedang menyusun strategi...";aiMessages.appendChild(wait);aiMessages.scrollTop=aiMessages.scrollHeight;
  try{
    const response=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
      message,history:hqChat.slice(-12),progress:hqProgressContext()
@@ -668,12 +649,55 @@ document.getElementById("evaluate").addEventListener("click",()=>{hqSave()});
 document.getElementById("resetChecks").addEventListener("click",()=>{setTimeout(hqSave,0)});
 
 hqLoad();
-renderMeal();renderWorkout();
+renderMeal();renderMealPhotos();renderWorkout();
 hqRenderMissions();
 hqSave();
-
-
-
 </script>
+
+
+<section class="plan-modal" id="planModal" aria-hidden="true">
+  <div class="plan-dialog" role="dialog" aria-modal="true" aria-labelledby="planTitle">
+    <div class="plan-dialog-head">
+      <img id="planMascot" alt="Partner sedang menyusun program" src="" />
+      <div><small>PERSONAL PROGRAM GENERATOR</small><h2 id="planTitle">Bangun Ulang Programku</h2><small>Profil tubuh → menu & latihan yang disesuaikan</small></div>
+      <button class="plan-close" id="closePlanBuilder" type="button" aria-label="Tutup">×</button>
+    </div>
+    <form class="plan-form" id="planForm">
+      <label class="plan-field">Usia (tahun)<input name="age" type="number" min="16" max="100" required placeholder="Contoh: 25"></label>
+      <label class="plan-field">Jenis kelamin (opsional)<select name="sex"><option value="prefer_not">Tidak ingin menyebutkan</option><option value="female">Perempuan</option><option value="male">Laki-laki</option><option value="other">Lainnya</option></select></label>
+      <label class="plan-field">Tinggi badan (cm)<input name="heightCm" type="number" min="100" max="250" required placeholder="Contoh: 165"></label>
+      <label class="plan-field">Berat badan saat ini (kg)<input name="weightKg" type="number" min="25" max="350" step="0.1" required placeholder="Contoh: 75"></label>
+      <label class="plan-field">Tujuan utama<select name="goal"><option value="health">Lebih sehat dan konsisten</option><option value="fat_loss">Mengelola berat badan secara bertahap</option><option value="fitness">Meningkatkan kebugaran</option><option value="strength">Meningkatkan kekuatan</option><option value="maintenance">Mempertahankan berat badan</option></select></label>
+      <label class="plan-field">Aktivitas sehari-hari<select name="activity"><option value="low">Banyak duduk / jarang olahraga</option><option value="light">Aktif ringan</option><option value="moderate">Cukup aktif</option><option value="high">Sangat aktif</option></select></label>
+      <label class="plan-field">Anggaran makan per hari (Rp)<input name="budget" type="number" min="0" max="1000000" step="5000" placeholder="Contoh: 35000"></label>
+      <label class="plan-field">Waktu olahraga<select name="workoutTime"><option value="10-15">10–15 menit</option><option value="20-30" selected>20–30 menit</option><option value="30-45">30–45 menit</option><option value="45+">45 menit atau lebih</option></select></label>
+      <label class="plan-field">Peralatan tersedia<select name="equipment"><option value="none">Tanpa alat</option><option value="basic">Matras / kursi / botol air</option><option value="gym">Peralatan gym</option></select></label>
+      <label class="plan-field">Preferensi makanan<input name="foodPrefs" type="text" maxlength="250" placeholder="Contoh: masakan rumahan, suka telur"></label>
+      <label class="plan-field full">Pantangan / alergi makanan<textarea name="allergies" maxlength="500" placeholder="Tuliskan alergi atau bahan yang harus dihindari. Jika tidak ada, kosongkan."></textarea></label>
+      <label class="plan-field full">Kondisi atau batasan latihan<textarea name="limitations" maxlength="500" placeholder="Misalnya nyeri lutut, cedera, kondisi medis, atau keterbatasan gerak. Tidak wajib mencantumkan diagnosis pribadi."></textarea></label>
+      <label class="plan-field full">Jadwal / kebutuhan khusus<textarea name="schedule" maxlength="300" placeholder="Contoh: kerja kantor, latihan setelah pulang kerja, menu mudah dibawa."></textarea></label>
+      <div class="plan-note">Program baru akan menggantikan menu dan latihan 30 hari yang sedang aktif di browser ini. AI menyusun panduan umum, bukan diagnosis atau resep medis. Hindari memasukkan informasi yang tidak diperlukan.</div>
+      <div class="plan-actions"><button class="secondary" id="cancelPlanBuilder" type="button">BATAL</button><button class="primary" id="generatePlanButton" type="submit">✦ GENERATE & GANTI PROGRAM</button></div>
+    </form>
+    <div class="plan-status" id="planStatus" role="status" aria-live="polite"></div>
+  </div>
+</section>
+
+<button class="ai-launcher" id="aiLauncher" aria-controls="aiPanel" aria-expanded="false">✦ PARTNER AI</button>
+<section class="ai-panel" id="aiPanel" aria-label="Chat Partner AI" aria-hidden="true">
+  <div class="ai-head">
+    <img id="aiMascot" alt="Partner chibi" src="" />
+    <div class="ai-head-copy"><strong>PARTNER SYSTEM</strong><small id="aiStatus">Misi kecil, progres nyata.</small></div>
+    <button class="ai-close" id="aiClose" aria-label="Tutup chat">×</button>
+  </div>
+  <div class="ai-mission" id="aiMission">QUEST HARI INI · tandai kebiasaanmu untuk mendapat XP.</div>
+  <div class="ai-messages" id="aiMessages" aria-live="polite"></div>
+  <form class="ai-compose" id="aiForm">
+    <textarea id="aiInput" rows="1" maxlength="1200" placeholder="Tanya menu, latihan, atau progres..." aria-label="Pesan untuk partner AI"></textarea>
+    <button class="ai-send" id="aiSend" type="submit">KIRIM</button>
+  </form>
+  <div class="ai-footnote">AI bisa keliru. Bukan pengganti tenaga medis. Chat tersimpan di browser ini.</div>
+</section>
+
 </body>
 </html>
