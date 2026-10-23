@@ -10,7 +10,6 @@ module.exports = async (req, res) => {
   }
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return res.status(503).json({ error: "GEMINI_API_KEY belum dipasang di Environment Variables Vercel." });
-
   try {
     const profile = req.body && req.body.profile;
     if (!profile || typeof profile !== "object") return res.status(400).json({ error: "Profil tubuh belum dikirim." });
