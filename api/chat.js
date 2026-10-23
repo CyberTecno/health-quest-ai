@@ -1,5 +1,4 @@
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "";
-
 module.exports = async (req, res) => {
   if (req.method === "OPTIONS") {
     res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
