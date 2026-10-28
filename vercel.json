@@ -1,0 +1,19 @@
+{
+  "functions": {
+    "api/chat.js": {
+      "maxDuration": 30
+    },
+    "api/plan.js": {
+      "maxDuration": 60
+    },
+    "api/food-scan.js": {
+      "maxDuration": 30
+    },
+    "api/auth.js": {
+      "maxDuration": 15
+    },
+    "api/config.js": {
+      "maxDuration": 10
+    }
+  }
+}
